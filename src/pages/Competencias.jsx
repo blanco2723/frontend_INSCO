@@ -8,6 +8,7 @@ function Competencias() {
     const [competencias, setCompetencias] = useState([]);
     const [asignaturas, setAsignaturas] = useState([]);
 
+    const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [asignaturaId, setAsignaturaId] = useState('');
 
@@ -38,6 +39,7 @@ function Competencias() {
     };
 
     const limpiarFormulario = () => {
+        setNombre('');
         setDescripcion('');
         setAsignaturaId('');
         setEditando(false);
@@ -48,7 +50,7 @@ function Competencias() {
 
         try {
 
-            if (!asignaturaId) {
+            if (!nombre || !asignaturaId) {
                 return Swal.fire(
                     'Atención',
                     'Complete los campos obligatorios',
@@ -61,6 +63,7 @@ function Competencias() {
                 await api.put(
                     `/competencias/${idEditar}`,
                     {
+                        nombre,
                         descripcion,
                         asignatura_id: asignaturaId
                     }
@@ -77,6 +80,7 @@ function Competencias() {
                 await api.post(
                     '/competencias',
                     {
+                        nombre,
                         descripcion,
                         asignatura_id: asignaturaId
                     }
@@ -99,6 +103,7 @@ function Competencias() {
 
     const editarCompetencia = (item) => {
 
+        setNombre(item.nombre);
         setDescripcion(item.descripcion);
         setAsignaturaId(item.asignatura_id);
 
@@ -155,6 +160,16 @@ function Competencias() {
                                         : 'Nueva Competencia'
                                 }
                             </h4>
+
+                            <input
+                                type="text"
+                                className="form-control mb-3"
+                                placeholder="Nombre"
+                                value={nombre}
+                                onChange={(e) =>
+                                    setNombre(e.target.value)
+                                }
+                            />
 
                             <textarea
                                 className="form-control mb-3"
@@ -237,7 +252,7 @@ function Competencias() {
 
                                                 <td>{item.id}</td>
 
-                                                <td>{item.descripcion}</td>
+                                                <td>{item.nombre}</td>
 
                                                 <td>
                                                     {item.asignaturas?.nombre}

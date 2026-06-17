@@ -12,6 +12,8 @@ function Competencias() {
     const [descripcion, setDescripcion] = useState('');
     const [asignaturaId, setAsignaturaId] = useState('');
 
+    const [generandoIA, setGenerandoIA] = useState(false);
+
     const [editando, setEditando] = useState(false);
     const [idEditar, setIdEditar] = useState(null);
 
@@ -141,13 +143,86 @@ function Competencias() {
         }
     };
 
+
+const generarCompetenciaIA = async () => {
+
+    try {
+
+        if (!asignaturaId) {
+
+            Swal.fire(
+                'Atención',
+                'Seleccione una asignatura',
+                'warning'
+            );
+
+            return;
+        }
+
+        setGenerandoIA(true);
+
+        const asignaturaSeleccionada =
+            asignaturas.find(
+                a => a.id == asignaturaId
+            );
+
+        const res = await api.post(
+            '/ia/competencia',
+            {
+                carrera:
+                    asignaturaSeleccionada?.carreras?.nombre ||
+                    'Sistemas Informáticos',
+
+                asignatura:
+                    asignaturaSeleccionada?.nombre,
+
+                anio:
+                    asignaturaSeleccionada?.anio
+            }
+        );
+
+        setNombre(
+            res.data.nombre || ''
+        );
+
+        setDescripcion(
+            res.data.descripcion ||
+            res.data.competencia ||
+            ''
+        );
+
+        Swal.fire(
+            'Éxito',
+            'Competencia generada correctamente',
+            'success'
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        Swal.fire(
+            'Error',
+            'No se pudo generar la competencia',
+            'error'
+        );
+
+    } finally {
+
+        setGenerandoIA(false);
+
+    }
+
+};
+
+
     return (
 
         <Layout>
 
             <div className="row">
 
-                <div className="col-md-4">
+                <div className="col-md-12">
 
                     <div className="card">
 
@@ -160,25 +235,6 @@ function Competencias() {
                                         : 'Nueva Competencia'
                                 }
                             </h4>
-
-                            <input
-                                type="text"
-                                className="form-control mb-3"
-                                placeholder="Nombre"
-                                value={nombre}
-                                onChange={(e) =>
-                                    setNombre(e.target.value)
-                                }
-                            />
-
-                            <textarea
-                                className="form-control mb-3"
-                                placeholder="Descripción"
-                                value={descripcion}
-                                onChange={(e) =>
-                                    setDescripcion(e.target.value)
-                                }
-                            />
 
                             <select
                                 className="form-select mb-3"
@@ -204,6 +260,39 @@ function Competencias() {
                                 }
 
                             </select>
+                          <button
+                            type="button"
+                            className="btn btn-success mb-3"
+                            onClick={generarCompetenciaIA}
+                            disabled={generandoIA}
+                        >
+                            {
+                                generandoIA
+                                    ? 'Generando...'
+                                    : 'Generar Competencia con IA'
+                            }
+                        </button>
+
+
+                            <input
+                                type="text"
+                                className="form-control mb-3"
+                                placeholder="Nombre"
+                                value={nombre}
+                                onChange={(e) =>
+                                    setNombre(e.target.value)
+                                }
+                            />
+
+                            <textarea
+                                className="form-control mb-3"
+                                placeholder="Descripción"
+                                value={descripcion}
+                                onChange={(e) =>
+                                    setDescripcion(e.target.value)
+                                }
+                            />
+
 
                             <button
                                 className="btn btn-primary"
@@ -222,7 +311,7 @@ function Competencias() {
 
                 </div>
 
-                <div className="col-md-8">
+                <div className="col-md-12">
 
                     <div className="card">
 

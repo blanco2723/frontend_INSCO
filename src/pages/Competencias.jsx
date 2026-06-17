@@ -13,7 +13,7 @@ function Competencias() {
     const [asignaturaId, setAsignaturaId] = useState('');
 
     const [generandoIA, setGenerandoIA] = useState(false);
-
+ 
     const [editando, setEditando] = useState(false);
     const [idEditar, setIdEditar] = useState(null);
 
@@ -150,16 +150,15 @@ const generarCompetenciaIA = async () => {
 
         if (!asignaturaId) {
 
-            Swal.fire(
-                'Atención',
+            return Swal.fire(
                 'Seleccione una asignatura',
+                '',
                 'warning'
             );
 
-            return;
         }
 
-        setGenerandoIA(true);
+           setGenerandoIA(true);
 
         const asignaturaSeleccionada =
             asignaturas.find(
@@ -181,25 +180,21 @@ const generarCompetenciaIA = async () => {
             }
         );
 
-        setNombre(
-            res.data.nombre || ''
-        );
+        setNombre(res.data.nombre);
 
         setDescripcion(
-            res.data.descripcion ||
-            res.data.competencia ||
-            ''
+            res.data.descripcion
         );
 
         Swal.fire(
-            'Éxito',
+            'IA',
             'Competencia generada correctamente',
             'success'
         );
 
     } catch (error) {
 
-        console.error(error);
+        console.log(error);
 
         Swal.fire(
             'Error',
@@ -207,7 +202,7 @@ const generarCompetenciaIA = async () => {
             'error'
         );
 
-    } finally {
+    }finally {
 
         setGenerandoIA(false);
 

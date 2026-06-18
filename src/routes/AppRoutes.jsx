@@ -10,6 +10,7 @@ import Asignaturas from "../pages/Asignaturas"
 import Competencias from "../pages/Competencias"
 import Contenidos from "../pages/Contenidos";
 import Articulaciones from '../pages/Articulaciones';
+import Saberes from '../pages/Saberes';
 
 
 function AppRoutes() {
@@ -23,6 +24,7 @@ function AppRoutes() {
                 <Route path="/competencias" element={<Competencias />}/>
                 <Route path="/contenidos" element={<Contenidos />}/>
                 <Route path="/articulaciones" element={<Articulaciones />}/>
+                <Route path="/saberes" element={<Saberes />}/>
             </Routes>
         </BrowserRouter>
     )

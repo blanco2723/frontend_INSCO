@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import api from '../services/api'
+import Swal from "sweetalert2";
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -10,7 +11,11 @@ function Login() {
         try {
             const res = await api.post('/auth/login', { email, password })
             localStorage.setItem('token', res.data.token)
-            alert('Inicio de sesión exitoso')
+            Swal.fire(
+                            'Bienvenido',
+                            'Inicio de sesión exitoso',
+                            'success'
+                        );
             window.location.href = '/dashboard'
         } catch (error) {
             alert('Error al iniciar sesión')

@@ -19,6 +19,12 @@ function Saberes() {
     const [editando, setEditando] = useState(false);
     const [idEditar, setIdEditar] = useState(null);
 
+    const [ideasIA,setIdeasIA] = useState([]);
+
+    const [ideaSeleccionada,setIdeaSeleccionada] = useState(null);
+
+    const [generandoIA,setGenerandoIA] = useState(false);
+
     // =====================
     // CARGAR SABERES
     // =====================
@@ -46,6 +52,9 @@ function Saberes() {
 
         setEditando(false);
         setIdEditar(null);
+        setIdeasIA([]);
+
+        setIdeaSeleccionada(null);
     };
 
     // =====================
@@ -93,6 +102,8 @@ function Saberes() {
 
             limpiarFormulario();
             cargarSaberes();
+            setIdeasIA([]);
+            setIdeaSeleccionada(null);
 
         } catch (error) {
 
@@ -158,13 +169,104 @@ function Saberes() {
             );
         }
     };
+
+    const generarIdeasSaberes = async () => {
+
+        try {
+
+            if (!areaProductiva) {
+
+                Swal.fire(
+                    "Atención",
+                    "Ingrese un área productiva",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+            setGenerandoIA(true);
+
+            const res =
+                await api.post(
+                    "/ia/saberes",
+                    {
+                        area_productiva:
+                            areaProductiva,
+
+                        comunidad:
+                            comunidad
+                    }
+                );
+
+            setIdeasIA(
+                res.data
+            );
+
+        } catch (error) {
+
+            console.log(error);
+
+        } finally {
+
+            setGenerandoIA(false);
+
+        }
+
+    };
+
+    const usarIdeasSeleccionadas = () => {
+
+        const seleccionados =
+            ideasIA.filter(
+                item => item.seleccionado
+            );
+
+        if (
+            seleccionados.length !== 1
+        ) {
+
+            Swal.fire(
+                'Atención',
+                'Seleccione una sola idea',
+                'warning'
+            );
+
+            return;
+
+        }
+
+        setTitulo(
+            seleccionados[0].titulo
+        );
+
+        setDescripcion(
+            seleccionados[0].descripcion
+        );
+
+    };
+    const usarIdeaSeleccionada = ()=>{
+
+    const idea =
+    ideasIA[ideaSeleccionada];
+
+    setTitulo(
+        idea.titulo
+    );
+
+    setDescripcion(
+        idea.descripcion
+    );
+
+};
     return (
         <Layout>
 
             <div className="row">
 
                 {/* ================= FORM ================= */}
-                <div className="col-md-4">
+                <div className="col-md-12">
 
                     <div className="card shadow">
 
@@ -173,9 +275,114 @@ function Saberes() {
                             <h4>
                                 {editando ? "Editar Saber" : "Nuevo Saber"}
                             </h4>
+                            <div className="row">
+                                <div className="col-md-3">
+                                    <label className="form-label">Área productiva</label>
+                                </div><div className="col-md-6">
+                                    <div className="mb-3">
+
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={areaProductiva}
+                                            onChange={(e) => setAreaProductiva(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <button
+                                        className="btn btn-success mb-3"
+                                        onClick={generarIdeasSaberes}
+                                        disabled={generandoIA}
+                                    >
+
+                                        {
+                                            generandoIA
+                                                ? "Generando ideas..."
+                                                : "🤖 Sugerir Saberes"
+                                        }
+
+                                    </button>
+                                </div>
+                            </div>
+
+
 
                             <hr />
+                            {
+ideasIA.length > 0 && (
 
+<div className="card mt-3 shadow">
+
+    <div className="card-header">
+
+        <strong>
+            🤖 Ideas sugeridas por IA
+        </strong>
+
+    </div>
+
+    <div className="card-body">
+
+        {
+            ideasIA.map((item,index)=>(
+
+                <div
+                    key={index}
+                    className={`card mb-3 cursor-pointer ${
+                        ideaSeleccionada === index
+                        ? 'bg-primary text-white'
+                        : ''
+                    }`}
+                    style={{
+                        cursor:'pointer'
+                    }}
+                    onClick={()=>
+                        setIdeaSeleccionada(index)
+                    }
+                >
+
+                    <div className="card-body">
+
+                        <h6>
+
+                            {item.titulo}
+
+                        </h6>
+
+                        <p className="mb-0">
+
+                            {item.descripcion}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            ))
+        }
+
+        {
+            ideaSeleccionada !== null && (
+
+                <button
+                    className="btn btn-success"
+                    onClick={usarIdeaSeleccionada}
+                >
+                    Usar idea seleccionada
+                </button>
+
+            )
+        }
+
+    </div>
+
+</div>
+
+)
+}
                             <div className="mb-3">
                                 <label className="form-label">Título</label>
                                 <input
@@ -196,15 +403,7 @@ function Saberes() {
                                 />
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Área productiva</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={areaProductiva}
-                                    onChange={(e) => setAreaProductiva(e.target.value)}
-                                />
-                            </div>
+
 
                             <div className="mb-3">
                                 <label className="form-label">Comunidad</label>
@@ -215,6 +414,7 @@ function Saberes() {
                                     onChange={(e) => setComunidad(e.target.value)}
                                 />
                             </div>
+
 
                             <button
                                 className="btn btn-primary"
@@ -240,7 +440,7 @@ function Saberes() {
                 </div>
 
                 {/* ================= LISTA ================= */}
-                <div className="col-md-8">
+                <div className="col-md-12">
 
                     <div className="card shadow">
 

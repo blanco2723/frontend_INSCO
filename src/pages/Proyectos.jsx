@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Layout from "../components/Layout";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Proyectos() {
 
@@ -22,6 +23,8 @@ function Proyectos() {
     const [ideasIA, setIdeasIA] = useState([]);
     const [ideaSeleccionada, setIdeaSeleccionada] = useState(null);
     const [generandoIA, setGenerandoIA] = useState(false);
+
+const navigate = useNavigate();
 
     const [hoveredIdea, setHoveredIdea] = useState(null);
     const toggleIdea = (idea) => {
@@ -768,10 +771,15 @@ function Proyectos() {
                                                     <td>
 
                                                         <button
-                                                            className="btn btn-primary btn-sm me-2"
-                                                        >
-                                                            Desarrollar
-                                                        </button>
+className="btn btn-primary btn-sm me-2"
+onClick={()=>
+navigate(
+`/proyectos/desarrollar/${item.id}`
+)
+}
+>
+Desarrollar
+</button>
 
                                                         <button
                                                             className="btn btn-danger btn-sm me-2"

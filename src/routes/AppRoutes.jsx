@@ -12,7 +12,7 @@ import Contenidos from "../pages/Contenidos";
 import Articulaciones from '../pages/Articulaciones';
 import Saberes from '../pages/Saberes';
 import Proyectos from '../pages/Proyectos';
-
+import ProyectoDesarrollo from '../pages/ProyectoDesarrollo'
 
 function AppRoutes() {
     return (
@@ -27,6 +27,8 @@ function AppRoutes() {
                 <Route path="/articulaciones" element={<Articulaciones />}/>
                 <Route path="/saberes" element={<Saberes />}/>
                 <Route path="/proyectos" element={<Proyectos />}/>
+                <Route path="/proyectos/desarrollar/:id" element={<ProyectoDesarrollo />}
+/>
             </Routes>
         </BrowserRouter>
     )
